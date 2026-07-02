@@ -4,8 +4,8 @@ module HotwireClub
     # <template> holding the turbo-stream(s) the Stimulus controller paints on
     # submit, and (optionally) a hidden field carrying the value being toggled.
     class OptimisticFormBuilder < ActionView::Helpers::FormBuilder
-      # Sentinel so an explicit `value: false` is preserved while "not given"
-      # can still be distinguished from a real nil/false value.
+      # Sentinel used by OptimisticFormHelper's form defaults to distinguish
+      # "no value given" from a real nil/false value.
       UNSET = Object.new
 
       # Wraps the optimistic markup in a <template> the Stimulus controller
@@ -32,9 +32,12 @@ module HotwireClub
       # the field as rendered so the helper skips its automatic injection.
       #
       #   form.optimistic_hidden_field :favorite, value: !photo.favorite
-      def optimistic_hidden_field(attribute_name, value: UNSET)
+      #
+      # +value:+ is required (a value-less field would be meaningless); pass
+      # +false+ freely, only +nil+ renders an empty value.
+      def optimistic_hidden_field(attribute_name, value:)
         @optimistic_hidden_field_rendered = true
-        hidden_field(attribute_name, value: UNSET.equal?(value) ? nil : value)
+        hidden_field(attribute_name, value: value)
       end
 
       def optimistic_hidden_field_rendered?

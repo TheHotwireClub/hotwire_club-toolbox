@@ -80,6 +80,12 @@ module HotwireClub
         assert_empty hidden_inputs(html, "favorite")
       end
 
+      test "an explicit optimistic_hidden_field requires a value" do
+        assert_raises(ArgumentError) do
+          optimistic_form_with(url: "/x") { |form| form.optimistic_hidden_field(:favorite) }
+        end
+      end
+
       private
 
       def fragment(html)

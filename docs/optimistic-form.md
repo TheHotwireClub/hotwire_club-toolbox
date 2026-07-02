@@ -147,6 +147,8 @@ Helpers (available in all views):
 - `optimistic_form_with(attribute_name: nil, value: nil, **options, &block)`
 - `optimistic_form_for(record, attribute_name: nil, value: nil, **options, &block)`
 
+Both set `options[:builder]` to `OptimisticFormBuilder`; a `builder:` you pass is overridden (the tool's builder methods depend on it).
+
 Builder methods (yielded `form`):
 
 - `optimistic_template(target = nil, template = nil, &block)` - wraps a `turbo_stream.update` (positional) or your block in the tracked `<template>`.
