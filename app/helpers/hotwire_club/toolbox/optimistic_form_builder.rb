@@ -20,7 +20,7 @@ module HotwireClub
         content = if block
           @template.capture(&block)
         else
-          @template.turbo_stream_action_tag(:update, target: target, template: template)
+          @template.turbo_stream.turbo_stream_action_tag(:update, target: target, template: template)
         end
 
         @template.content_tag("template", data: { optimistic_form_target: "template" }) do
