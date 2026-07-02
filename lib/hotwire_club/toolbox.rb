@@ -1,3 +1,4 @@
+require "turbo-rails"
 require "hotwire_club/toolbox/version"
 require "hotwire_club/toolbox/engine"
 

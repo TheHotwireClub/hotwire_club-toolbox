@@ -1,6 +1,12 @@
 # HotwireClub::Toolbox
 Short description and motivation.
 
+## Tools
+
+A collection of loosely connected Hotwire/Rails tools and techniques. Each has its own usage guide under [`docs/`](docs/).
+
+- **[Optimistic Form](docs/optimistic-form.md)** - optimistic UI for Turbo forms: paint the predicted result instantly on submit, reconcile with the server only on failure.
+
 ## Usage
 How to use my plugin.
 

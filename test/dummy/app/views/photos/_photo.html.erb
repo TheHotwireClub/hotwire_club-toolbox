@@ -1,0 +1,34 @@
+<li id="<%= dom_id(photo) %>">
+  <%= render "photos/favorite_button", photo: photo %>
+
+  <%# Optimistic favorite toggle (success path) %>
+  <%= optimistic_form_for photo, attribute_name: :favorite, value: !photo.favorite do |form| %>
+    <%= form.optimistic_template dom_id(photo, "favorite-button-icon"), favorite_button_icon(!photo.favorite) %>
+    <%= form.button "Favorite", id: dom_id(photo, "favorite-submit") %>
+  <% end %>
+
+  <%# Optimistic favorite toggle that always fails (reconciliation path) %>
+  <%= optimistic_form_for photo, attribute_name: :favorite, value: !photo.favorite do |form| %>
+    <%= hidden_field_tag :demo_failure, true %>
+    <%= form.optimistic_template dom_id(photo, "favorite-button-icon"), favorite_button_icon(!photo.favorite) %>
+    <%= form.button "Favorite (fails)", id: dom_id(photo, "fail-submit") %>
+  <% end %>
+
+  <%# Optimistic add-to-cart %>
+  <%= optimistic_form_with url: carts_update_path, method: :patch, attribute_name: :photo_id, value: photo.id do |form| %>
+    <%= form.optimistic_template "cart-items-count", (@cart_items_count + 1) %>
+    <%= form.button "Add to cart", id: dom_id(photo, "cart-submit") %>
+  <% end %>
+
+  <%# Two optimistic templates in one form (multi-template) %>
+  <%= optimistic_form_with url: carts_update_path, method: :patch, attribute_name: :photo_id, value: photo.id do |form| %>
+    <%= form.optimistic_template "cart-items-count", (@cart_items_count + 1) %>
+    <%= form.optimistic_template dom_id(photo, "favorite-button-icon"), favorite_button_icon(true) %>
+    <%= form.button "Add and favorite", id: dom_id(photo, "multi-submit") %>
+  <% end %>
+
+  <%# No optimistic template (must submit without error) %>
+  <%= optimistic_form_with url: carts_update_path, method: :patch, attribute_name: :photo_id, value: photo.id do |form| %>
+    <%= form.button "Add without template", id: dom_id(photo, "notemplate-submit") %>
+  <% end %>
+</li>

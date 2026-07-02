@@ -6,6 +6,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Dummy">
     <meta name="mobile-web-app-capable" content="yes">
+
+    <meta name="turbo-refresh-method" content="morph">
+    <meta name="turbo-refresh-scroll" content="preserve">
+
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -20,9 +24,16 @@
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app %>
+    <%= javascript_importmap_tags %>
   </head>
 
   <body>
+    <%= render "nav/nav" %>
+
+    <% if flash[:alert].present? %>
+      <p id="alert"><%= flash[:alert] %></p>
+    <% end %>
+
     <%= yield %>
   </body>
 </html>
