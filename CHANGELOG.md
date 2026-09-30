@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented here.
 
-## [Unreleased]
+## [0.1.1]
 
 ### Added
 - **Optimistic Form**: the builder methods (`optimistic_template`,
