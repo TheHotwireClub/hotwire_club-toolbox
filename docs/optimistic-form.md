@@ -135,6 +135,26 @@ Instead of the positional `target, template`, pass a block to author the stream(
 <% end %>
 ```
 
+## Using your own form builder
+
+Apps often have a builder of their own (a design-system builder, a Tailwind builder). The optimistic methods are a mixin, so such a builder can carry them instead of being replaced:
+
+```ruby
+class WebAwesomeFormBuilder < ActionView::Helpers::FormBuilder
+  include HotwireClub::Toolbox::OptimisticFormBuilding
+  # ...
+end
+```
+
+```erb
+<%= optimistic_form_with url: cart_path, builder: WebAwesomeFormBuilder do |form| %>
+  <%= form.optimistic_template "cart-items-count", @cart_items_count + 1 %>
+  <%= form.submit_button "Add to cart" %>  <%# a method of your builder %>
+<% end %>
+```
+
+`OptimisticFormBuilder` itself is just `ActionView::Helpers::FormBuilder` with the module included. A `builder:` that lacks the module raises `ArgumentError` at render time, so a missing `include` shows up immediately rather than as a `NoMethodError` on `optimistic_template`.
+
 ## Notes
 
 - **Escaping.** Template content is treated as trusted developer markup, the same as any `turbo_stream.update` body (this is what lets you inject SVG icons). Do not pass unescaped user input; sanitize at the call site if you must.
@@ -147,7 +167,7 @@ Helpers (available in all views):
 - `optimistic_form_with(attribute_name: nil, value: nil, **options, &block)`
 - `optimistic_form_for(record, attribute_name: nil, value: nil, **options, &block)`
 
-Both set `options[:builder]` to `OptimisticFormBuilder`; a `builder:` you pass is overridden (the tool's builder methods depend on it).
+Both default `options[:builder]` to `OptimisticFormBuilder`. A `builder:` you pass is kept when it includes `HotwireClub::Toolbox::OptimisticFormBuilding` (see [Using your own form builder](#using-your-own-form-builder)); one without it raises `ArgumentError` rather than being silently replaced.
 
 Builder methods (yielded `form`):
 
