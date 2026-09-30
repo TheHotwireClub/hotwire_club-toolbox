@@ -10,9 +10,12 @@ module HotwireClub
     #
     # Pass +attribute_name:+/+value:+ to have a hidden field injected
     # automatically, or call +form.optimistic_hidden_field+ yourself to place it.
+    #
+    # A +builder:+ option is honoured when that builder includes
+    # `OptimisticFormBuilding`; without one, `OptimisticFormBuilder` is used.
     module OptimisticFormHelper
-      def optimistic_form_with(attribute_name: nil, value: OptimisticFormBuilder::UNSET, **options, &block)
-        options[:builder] = OptimisticFormBuilder
+      def optimistic_form_with(attribute_name: nil, value: OptimisticFormBuilding::UNSET, **options, &block)
+        options[:builder] = optimistic_form_builder(options[:builder])
         enrich_form_with_optimistic_options(options)
 
         form_with(**options) do |form|
@@ -20,8 +23,8 @@ module HotwireClub
         end
       end
 
-      def optimistic_form_for(record, attribute_name: nil, value: OptimisticFormBuilder::UNSET, **options, &block)
-        options[:builder] = OptimisticFormBuilder
+      def optimistic_form_for(record, attribute_name: nil, value: OptimisticFormBuilding::UNSET, **options, &block)
+        options[:builder] = optimistic_form_builder(options[:builder])
         enrich_form_with_optimistic_options(options)
 
         form_for(record, **options) do |form|
@@ -30,6 +33,16 @@ module HotwireClub
       end
 
       private
+
+      # The app's own builder is kept when it carries the optimistic methods.
+      # One without them fails loudly rather than being swapped out: the caller
+      # asked for that builder and would otherwise silently lose its methods.
+      def optimistic_form_builder(builder)
+        return OptimisticFormBuilder if builder.nil?
+        return builder if builder <= OptimisticFormBuilding
+
+        raise ArgumentError, "#{builder} must include HotwireClub::Toolbox::OptimisticFormBuilding to build an optimistic form"
+      end
 
       # Capture the block first so an explicit `form.optimistic_hidden_field`
       # call inside it wins; only auto-inject when the caller supplied
@@ -47,7 +60,7 @@ module HotwireClub
       def auto_inject_hidden_field?(form, attribute_name, value)
         attribute_name.present? &&
           !value.nil? &&
-          !OptimisticFormBuilder::UNSET.equal?(value) &&
+          !OptimisticFormBuilding::UNSET.equal?(value) &&
           !form.optimistic_hidden_field_rendered?
       end
 

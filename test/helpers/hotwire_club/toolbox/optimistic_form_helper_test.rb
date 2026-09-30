@@ -7,6 +7,18 @@ module HotwireClub
       # the bare ActionView::TestCase view does not, so include it explicitly.
       include Turbo::StreamsHelper
 
+      # An app's own builder carrying the optimistic methods.
+      class MarkedBuilder < ActionView::Helpers::FormBuilder
+        include HotwireClub::Toolbox::OptimisticFormBuilding
+
+        def marker
+          @template.tag.i(id: "marker")
+        end
+      end
+
+      class PlainBuilder < ActionView::Helpers::FormBuilder
+      end
+
       # --- form wiring -------------------------------------------------------
 
       test "adds the optimistic-form controller and submit actions" do
@@ -28,6 +40,40 @@ module HotwireClub
         assert_includes form["data-action"], "click->existing#go"
         assert_includes form["data-action"], "turbo:submit-start->optimistic-form#apply"
       end
+
+# --- builder ------------------------------------------------------------
+
+test "uses OptimisticFormBuilder when no builder is given" do
+  klass = nil
+  optimistic_form_with(url: "/x") { |form| klass = form.class; "" }
+
+  assert_equal HotwireClub::Toolbox::OptimisticFormBuilder, klass
+end
+
+test "keeps a builder that includes OptimisticFormBuilding" do
+  html = optimistic_form_with(url: "/x", builder: MarkedBuilder) do |form|
+    form.marker + form.optimistic_template { tag.span("hi") }
+  end
+  doc = fragment(html)
+
+  assert_not_nil doc.at_css("form i#marker")
+  assert_not_nil doc.at_css("template[data-optimistic-form-target=template] span")
+end
+
+test "optimistic_form_for keeps a builder that includes OptimisticFormBuilding" do
+  klass = nil
+  optimistic_form_for(Photo.new, url: "/x", builder: MarkedBuilder) { |form| klass = form.class; "" }
+
+  assert_equal MarkedBuilder, klass
+end
+
+test "rejects a builder without the optimistic methods" do
+  error = assert_raises(ArgumentError) do
+    optimistic_form_with(url: "/x", builder: PlainBuilder) { |f| "" }
+  end
+
+  assert_includes error.message, "OptimisticFormBuilding"
+end
 
       # --- optimistic_template ----------------------------------------------
       # The positional (turbo-stream) form needs a full view context and is
