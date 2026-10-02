@@ -58,4 +58,30 @@ class OptimisticFormTest < ApplicationSystemTestCase
     assert_selector "h1", text: "Photos"
     assert_selector "#cart-items-count", text: "0"
   end
+
+  test "optimistically removes a row whose form goes with it" do
+    visit photos_path
+    row = "##{ActionView::RecordIdentifier.dom_id(@photo)}"
+
+    click_on "Remove"
+
+    assert_no_selector row
+    # Waits for the response: the paint alone would also pass the line above.
+    assert_no_selector "html[aria-busy]"
+    assert_not Photo.exists?(@photo.id)
+    assert_no_selector "#alert"
+  end
+
+  test "brings a removed row back when the server rejects the removal" do
+    visit photos_path
+    row = "##{ActionView::RecordIdentifier.dom_id(@photo)}"
+
+    click_on "Remove (fails)"
+
+    # The form left the page with the row, so turbo:submit-end no longer reaches
+    # it. The flash only renders through the reconciling refresh.
+    assert_selector "#alert", text: "could not be removed"
+    assert_selector row
+    assert Photo.exists?(@photo.id)
+  end
 end

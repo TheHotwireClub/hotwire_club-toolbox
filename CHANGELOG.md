@@ -2,6 +2,17 @@
 
 All notable changes to this project are documented here.
 
+## [Unreleased]
+
+### Fixed
+- **Optimistic Form**: a failed submission is now reconciled when the optimistic
+  paint removed the form itself, as a predicted row removal does. Turbo
+  dispatches `turbo:submit-end` on `<html>` once the form has left the page, so
+  the form's own action never ran and the removed row stayed gone. The
+  controller now also watches the submission from the document. Apps that
+  copied `optimistic_form_controller.js` (jsbundling, vite) need to copy it
+  again.
+
 ## [0.1.1]
 
 ### Added

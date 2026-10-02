@@ -58,6 +58,19 @@ An add-to-cart button that bumps a counter elsewhere on the page:
 
 This keeps the happy path free of extra requests. A full page refresh only ever runs when the server rejects the change, which is exactly when you want authoritative truth.
 
+### Predictions that remove the form
+
+A prediction may take its own form out of the page: a delete button whose template removes the row it sits in, or one that replaces a card around it.
+
+```erb
+<%= optimistic_form_with url: photo_path(photo), method: :delete do |form| %>
+  <%= form.optimistic_template { turbo_stream.remove(dom_id(photo)) } %>
+  <%= form.button "Remove" %>
+<% end %>
+```
+
+Turbo dispatches `turbo:submit-end` on `<html>` once the form is no longer connected, so the form's own action cannot hear it. The controller therefore also follows each painted submission from the document, and a rejected removal refreshes the page and brings the row back like any other failure.
+
 ## Server contract
 
 Because success trusts the optimistic paint and failure triggers a client refresh, your controller must respond accordingly:
