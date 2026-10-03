@@ -71,7 +71,7 @@ module HotwireClub
         options[:html][:data][:controller] =
           [ options[:html][:data][:controller], "optimistic-form" ].compact.join(" ")
         options[:html][:data][:action] =
-          [ options[:html][:data][:action], "turbo:submit-start->optimistic-form#apply turbo:submit-end->optimistic-form#refresh" ].compact.join(" ")
+          [ options[:html][:data][:action], "turbo:submit-start->optimistic-form#apply" ].compact.join(" ")
       end
     end
   end

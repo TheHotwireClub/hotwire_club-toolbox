@@ -7,10 +7,10 @@ module HotwireClub
     class OptimisticFormRenderingTest < ActionDispatch::IntegrationTest
       setup { get "/photos" }
 
-      test "wires the optimistic-form controller and submit actions onto forms" do
+      test "wires the optimistic-form controller and the submit-start action onto forms" do
         assert_select "form[data-controller~=?]", "optimistic-form"
         assert_select "form[data-action*=?]", "turbo:submit-start->optimistic-form#apply"
-        assert_select "form[data-action*=?]", "turbo:submit-end->optimistic-form#refresh"
+        assert_select "form[data-action*=?]", "turbo:submit-end", false
       end
 
       test "renders optimistic templates as turbo-stream updates" do

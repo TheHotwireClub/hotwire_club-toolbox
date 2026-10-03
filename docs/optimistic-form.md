@@ -53,8 +53,10 @@ An add-to-cart button that bumps a counter elsewhere on the page:
 
 ## The reconciliation model
 
-- **On submit-start**, the controller clones the form's `<template>`(s) into the document. Turbo processes the contained stream and paints the optimistic state.
+- **On submit-start**, the controller clones the form's `<template>`(s) into the document. Turbo processes the contained stream and paints the optimistic state. The controller also starts following that submission from the document.
 - **On submit-end**, the controller reconciles **only if the submission failed** (`event.detail.success === false`). On success the optimistic paint already reflects the new state, so nothing happens.
+
+The helpers wire a single action onto the form, `turbo:submit-start->optimistic-form#apply`. Submit-end is not an action on the form: the controller listens for it on the document, matched to the submission it painted, so it is heard even when the form has left the page by then (see below).
 
 This keeps the happy path free of extra requests. A full page refresh only ever runs when the server rejects the change, which is exactly when you want authoritative truth.
 
@@ -69,7 +71,11 @@ A prediction may take its own form out of the page: a delete button whose templa
 <% end %>
 ```
 
-Turbo dispatches `turbo:submit-end` on `<html>` once the form is no longer connected, so the form's own action cannot hear it. The controller therefore also follows each painted submission from the document, and a rejected removal refreshes the page and brings the row back like any other failure.
+Turbo dispatches `turbo:submit-end` on `<html>` once the form is no longer connected, so a listener on the form would never hear it. Because the controller follows the submission from the document, a rejected removal refreshes the page and brings the row back like any other failure.
+
+### Upgrading from 0.1
+
+Before 0.2.0 the helpers also wired `turbo:submit-end->optimistic-form#refresh` onto the form, which is why a removed form was never reconciled. If your app copied `optimistic_form_controller.js` (jsbundling, vite), copy the 0.2.0 one before upgrading the gem: the old controller only reconciles through that action, which the 0.2.0 helpers no longer render. A form that still carries the action is harmless with the new controller, which refreshes once per submission.
 
 ## Server contract
 

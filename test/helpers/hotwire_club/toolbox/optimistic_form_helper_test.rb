@@ -21,12 +21,11 @@ module HotwireClub
 
       # --- form wiring -------------------------------------------------------
 
-      test "adds the optimistic-form controller and submit actions" do
+      test "adds the optimistic-form controller and the submit-start action" do
         form = fragment(optimistic_form_with(url: "/x") { |f| "" }).at_css("form")
 
         assert_includes form["data-controller"].split, "optimistic-form"
-        assert_includes form["data-action"], "turbo:submit-start->optimistic-form#apply"
-        assert_includes form["data-action"], "turbo:submit-end->optimistic-form#refresh"
+        assert_equal "turbo:submit-start->optimistic-form#apply", form["data-action"]
       end
 
       test "merges non-destructively with existing controller and action" do
