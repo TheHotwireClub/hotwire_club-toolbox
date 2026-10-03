@@ -2,6 +2,27 @@
 
 All notable changes to this project are documented here.
 
+## [0.2.0]
+
+### Changed
+- **Optimistic Form**: reconciliation moved from the form to the document. The
+  controller follows each submission it saw on `turbo:submit-start` and
+  refreshes on its `turbo:submit-end` when it failed, wherever that event is
+  dispatched. `optimistic_form_with` / `optimistic_form_for` now wire only
+  `turbo:submit-start->optimistic-form#apply`; the
+  `turbo:submit-end->optimistic-form#refresh` action is gone. A form that
+  still carries it (hand-wired, or rendered by a cached fragment) keeps
+  working: `refresh` runs once per submission.
+- **Upgrading**: apps that copied `optimistic_form_controller.js` (jsbundling,
+  vite) must copy the new one before rendering with the 0.2.0 helpers, since
+  the old controller only reconciled through the removed action.
+
+### Fixed
+- **Optimistic Form**: a failed submission is reconciled when the optimistic
+  paint removed the form itself, as a predicted row removal does. Turbo
+  dispatches `turbo:submit-end` on `<html>` once the form has left the page,
+  so the form-bound action never ran and the removed row stayed gone.
+
 ## [0.1.1]
 
 ### Added

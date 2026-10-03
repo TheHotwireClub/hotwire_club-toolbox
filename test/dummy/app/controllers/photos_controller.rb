@@ -28,6 +28,22 @@ class PhotosController < ApplicationController
     end
   end
 
+  # DELETE /photos/:id
+  #
+  # The optimistic paint removes the row and the submitting form with it. The
+  # demo_failure path refuses, so the client has to bring the row back.
+  def destroy
+    @photo = Photo.find(params[:id])
+
+    if params[:demo_failure].present?
+      flash[:alert] = "The photo could not be removed."
+      head :unprocessable_entity
+    else
+      @photo.destroy!
+      head :no_content
+    end
+  end
+
   private
 
   def photo_params

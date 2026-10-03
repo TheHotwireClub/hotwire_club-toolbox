@@ -31,4 +31,17 @@
   <%= optimistic_form_with url: carts_update_path, method: :patch, attribute_name: :photo_id, value: photo.id do |form| %>
     <%= form.button "Add without template", id: dom_id(photo, "notemplate-submit") %>
   <% end %>
+
+  <%# Optimistic removal: the prediction removes the row, and this form with it %>
+  <%= optimistic_form_with url: photo_path(photo), method: :delete do |form| %>
+    <%= form.optimistic_template { turbo_stream.remove(dom_id(photo)) } %>
+    <%= form.button "Remove", id: dom_id(photo, "remove-submit") %>
+  <% end %>
+
+  <%# Optimistic removal that always fails (reconciliation after the form is gone) %>
+  <%= optimistic_form_with url: photo_path(photo), method: :delete do |form| %>
+    <%= hidden_field_tag :demo_failure, true %>
+    <%= form.optimistic_template { turbo_stream.remove(dom_id(photo)) } %>
+    <%= form.button "Remove (fails)", id: dom_id(photo, "remove-fail-submit") %>
+  <% end %>
 </li>
