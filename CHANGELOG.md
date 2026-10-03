@@ -2,6 +2,20 @@
 
 All notable changes to this project are documented here.
 
+## [Unreleased]
+
+### Fixed
+- The app no longer fails to boot with `uninitialized constant
+  HotwireClub::Toolbox::OptimisticFormHelper` when another gem loads
+  `ActionView::Base` before the app initializes (prawn-rails does, during
+  `Bundler.require`). The engine's `on_load(:action_view)` hook then runs
+  immediately, before the main autoloader is set up. The engine's own
+  `app/helpers` directory is now managed by the once autoloader, which is
+  available during initialization. Nothing else moves: the host app's helpers
+  and other engines stay on the main autoloader. The only consequence is that
+  the toolbox's helpers are no longer reloaded in development, which suits
+  modules mixed into the never-reloaded `ActionView::Base`.
+
 ## [0.2.0]
 
 ### Changed

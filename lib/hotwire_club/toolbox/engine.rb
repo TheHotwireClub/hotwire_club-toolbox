@@ -1,6 +1,11 @@
 module HotwireClub
   module Toolbox
     class Engine < ::Rails::Engine
+      # The helpers below are included into ActionView::Base, which some gems
+      # load before the app initializes; the hook then runs at once, before the
+      # main autoloader exists. The once autoloader is already set up by then.
+      paths["app/helpers"].autoload_once!
+
       # Make the engine's view helpers available in the host app's views.
       # (The engine intentionally does not isolate its namespace.)
       initializer "hotwire_club.toolbox.helpers" do
