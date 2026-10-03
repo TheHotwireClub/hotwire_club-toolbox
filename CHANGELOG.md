@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented here.
 
-## [Unreleased]
+## [0.2.1]
 
 ### Fixed
 - The app no longer fails to boot with `uninitialized constant
