@@ -7,8 +7,7 @@
     <meta name="application-name" content="Dummy">
     <meta name="mobile-web-app-capable" content="yes">
 
-    <meta name="turbo-refresh-method" content="morph">
-    <meta name="turbo-refresh-scroll" content="preserve">
+    <%# No turbo-refresh-method/-scroll meta tags: the toolbox's refresh stream asks for morph itself. %>
 
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>

@@ -59,9 +59,12 @@ export default class extends Controller {
       this.reconciled.add(formSubmission);
     }
 
+    // Morph for this refresh alone, so the app's other page refreshes keep their
+    // own render. Turbo before 8.0.21 ignores the attributes and falls back to
+    // the turbo-refresh-method/-scroll meta tags.
     document.body.insertAdjacentHTML(
       "beforeend",
-      '<turbo-stream action="refresh"></turbo-stream>',
+      '<turbo-stream action="refresh" method="morph" scroll="preserve"></turbo-stream>',
     );
   }
 }
