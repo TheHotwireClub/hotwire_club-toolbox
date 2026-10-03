@@ -30,6 +30,8 @@ export default class extends Controller {
   reconcileWhenDetached(formSubmission) {
     if (!formSubmission) return;
 
+    // Not `once`: with several submissions in flight, another form's
+    // submit-end may come first, and that one must not consume the listener.
     const onSubmitEnd = (event) => {
       if (event.detail.formSubmission !== formSubmission) return;
 
