@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented here.
 
-## [Unreleased]
+## [0.2.2]
 
 ### Changed
 - **Optimistic Form**: the failure refresh asks for a morph itself
