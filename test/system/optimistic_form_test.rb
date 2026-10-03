@@ -38,6 +38,22 @@ class OptimisticFormTest < ApplicationSystemTestCase
     assert_not @photo.reload.favorite
   end
 
+  test "reconciles by morph and keeps the scroll position without the refresh meta tags" do
+    visit photos_path
+    page.driver.browser.manage.window.resize_to(1400, 300)
+    # A replace render swaps every node; a morph keeps this one, and its expando with it.
+    execute_script("document.getElementById('cart-items-count').survivedRefresh = true")
+    execute_script("window.scrollTo(0, 120)")
+    scroll = evaluate_script("window.scrollY")
+    assert_operator scroll, :>, 0
+
+    click_on "Favorite (fails)"
+
+    assert_selector "#alert", text: "could not be saved"
+    assert evaluate_script("document.getElementById('cart-items-count').survivedRefresh === true")
+    assert_equal scroll, evaluate_script("window.scrollY")
+  end
+
   test "applies multiple optimistic templates from one form" do
     visit photos_path
     assert_selector "#cart-items-count", text: "0"

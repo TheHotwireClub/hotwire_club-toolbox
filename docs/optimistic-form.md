@@ -22,12 +22,16 @@ It also ensures the Turbo morph refresh meta tags (see Prerequisites) are presen
 ### Prerequisites
 
 - **Turbo and Stimulus** in the host app.
-- **Turbo morph page refreshes.** Reconciliation on failure uses a Turbo refresh, which must morph (not hard reload) to be seamless. The generator adds these to your layout `<head>`:
+- **A morphing refresh.** Reconciliation on failure uses a Turbo page refresh, which must morph (not replace the page) to be seamless. The controller asks for that on its own refresh, `<turbo-stream action="refresh" method="morph" scroll="preserve">`, so with **Turbo 8.0.21 or later** (turbo-rails 2.0.21 or later) nothing else is needed, and the app's other page refreshes keep rendering the way they do.
+
+  Older Turbo ignores those attributes and takes the method from the page instead. There, add these to your layout `<head>` (the generator does):
 
   ```html
   <meta name="turbo-refresh-method" content="morph">
   <meta name="turbo-refresh-scroll" content="preserve">
   ```
+
+  They apply to every page refresh in the app, not only the toolbox's: a Back-button `Turbo.visit(location, {action: "replace"})`, or a top-level form that redirects to the page it was posted from, morphs too.
 
 ## Basic usage
 

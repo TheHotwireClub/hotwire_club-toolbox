@@ -2,6 +2,17 @@
 
 All notable changes to this project are documented here.
 
+## [Unreleased]
+
+### Changed
+- **Optimistic Form**: the failure refresh asks for a morph itself
+  (`<turbo-stream action="refresh" method="morph" scroll="preserve">`), so
+  with Turbo 8.0.21 or later the app no longer needs the
+  `turbo-refresh-method`/`-scroll` meta tags, which also change every other
+  page refresh in the app. Older Turbo ignores the attributes and still reads
+  the meta tags. Apps that copied `optimistic_form_controller.js` (jsbundling,
+  vite) need to copy it again to get this.
+
 ## [0.2.1]
 
 ### Fixed
